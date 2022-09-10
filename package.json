@@ -1,0 +1,16 @@
+{
+  "name": "presentations",
+  "version": "1.0.0",
+  "description": "Cody Moss's presentations",
+  "main": "index.js",
+  "repository": "git@github.com:codayblue/presentations.git",
+  "author": "codayblue <codayblue@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "npx http-server -c-1" 
+  },
+  "dependencies": {
+    "http-server": "^14.1.1",
+    "reveal.js": "^4.3.1"
+  }
+}
