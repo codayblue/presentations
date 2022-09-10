@@ -7,7 +7,10 @@
   "author": "codayblue <codayblue@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "npx http-server -c-1" 
+    "dev": "npx http-server -c-1",
+    "build": "docker build -t presentations:latest .",
+    "start": "yarn build && docker run --rm -p 8080:8080 --name presentations -d presentations:latest",
+    "stop": "docker stop presentations"
   },
   "dependencies": {
     "http-server": "^14.1.1",
