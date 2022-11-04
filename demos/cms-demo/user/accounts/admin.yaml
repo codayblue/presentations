@@ -1,0 +1,11 @@
+state: enabled
+email: admin@bluemossmedia.com
+fullname: Admin
+title: Admin
+access:
+  admin:
+    login: true
+    super: true
+  site:
+    login: true
+hashed_password: $2y$10$vblfMow3ZN3vYiwOmcIqRepDVC.o5WyUtqiW6aF74CTUUvphkwoCO

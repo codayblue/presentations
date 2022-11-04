@@ -1,0 +1,9 @@
+version: '1.2'
+timestamp: 1667532735
+count: 1
+index:
+  admin:
+    storage_key: admin
+    storage_timestamp: 1667532735
+    key: admin
+    email: admin@bluemossmedia.com
