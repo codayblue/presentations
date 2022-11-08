@@ -13,7 +13,7 @@ php_fastcgi $FPM_LOCATION:$FPM_PORT
 
 # Begin - Security
 # deny all direct access for these folders
-rewrite /(\.git|cache|bin|logs|backups|tests)/.* /403
+rewrite /(\.git|cache|bin|logs|backups|tests|docker|\.phan)/.* /403
 
 # deny running scripts inside core system folders
 rewrite /(system|vendor)/.*\.(txt|xml|md|html|yaml|yml|php|pl|py|cgi|twig|sh|bat)$ /403
@@ -22,7 +22,7 @@ rewrite /(system|vendor)/.*\.(txt|xml|md|html|yaml|yml|php|pl|py|cgi|twig|sh|bat
 rewrite /user/.*\.(txt|md|yaml|yml|php|pl|py|cgi|twig|sh|bat)$ /403
 
 # deny access to specific files in the root folder
-rewrite /(LICENSE\.txt|composer\.lock|composer\.json|nginx\.conf|web\.config|htaccess\.txt|\.htaccess) /403
+rewrite /(LICENSE\.txt|composer\.lock|composer\.json|nginx\.conf|web\.config|htaccess\.txt|\.htaccess|Dockerfile|docker-compose\.yml|build\.sh) /403
 
 respond /403 403
 ## End - Security

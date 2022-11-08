@@ -1,14 +1,17 @@
 FROM php:8.1-fpm-alpine AS PHP
 
-COPY . /app
-
-# Do not recommend for production but works well for demo
-RUN chmod -R 777 /app \
-    && apk add --no-cache \
+RUN apk add --no-cache \
        zlib-dev \
        libpng-dev \
        libzip-dev \
     && docker-php-ext-install gd zip
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+COPY . /app
+
+# Do not recommend 777 for production but works well for demo
+RUN chmod -R 777 /app
 
 FROM alpine:3.16 AS CONFIG
 
