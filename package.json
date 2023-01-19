@@ -13,7 +13,6 @@
     "stop": "docker stop presentations"
   },
   "dependencies": {
-    "http-server": "^14.1.1",
-    "reveal.js": "^4.3.1"
+    "http-server": "^14.1.1"
   }
 }
