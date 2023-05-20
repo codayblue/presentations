@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Kubernetes Workshop</title>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reset.min.css" integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css" integrity="sha512-A5PKBHoJQHdKjxpwyV+VhMsK7L3MMV1Ch2++rS0bn3xX8+5qJb3WpPvwJH1eqb6iMRtotfiOO7Jhl1qQ02Rwuw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/black.min.css" integrity="sha512-DKeDMgkMDBNgY3g8T6H6Ft5cB7St0LOh5d69BvETIcTrP0E3d3KhANTMs5QOTMnenXy6JVKz/tENmffCLeXPiQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/highlight/monokai.min.css" integrity="sha512-z8wQkuDRFwCBfoj7KOiu1MECaRVoXx6rZQWL21x0BsVVH7JkqCp1Otf39qve6CrCycOOL5o9vgfII5Smds23rg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>Kubernetes Workshop</h2>
+				</section>
+				<section>
+					<h2>Code can be found on <br /> <a href="https://github.com/codayblue/kubernetes-workshop">my github</a></h2>
+				</section>
+				<section>
+					<section>
+						<h2>Tools needed for this workshop</h2>
+						<ul>
+							<li class="fragment"><a href="#todo">Rancher Desktop</a></li>
+							<li class="fragment"><a href="#todo">Tilt</a></li>
+						</ul>
+					</section>
+					<section>
+						<p>When starting rancher desktop for the first time select dockerd (moby)</p>
+						<img class="r-stretch" src="../img/k8sws/rancher-prompt.png">
+					</section>
+					<section>
+						<p>Rancher Desktop comes with all the other tools we need to get started</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Pods</h2>
+						<ul>
+							<li class="fragment">Smallest form of a workload</li>
+							<li class="fragment">Ephemeral</li>
+							<li class="fragment">Needs a controller to come back if deleted</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Lets run a pod</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl run nginx --image=nginx --labels="app=nginx,env=demo"
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>You can check pods with the following</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl get pods
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>You should see something like below</h2>
+						<pre>
+							<code data-trim data-noescape>
+								NAME    READY   STATUS    RESTARTS   AGE
+								nginx   1/1     Running   0          77s
+							</code>
+						</pre>
+						<p>Depending on internet connection and speed it might take time get a status of running</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Exposing pods</h2>
+						<ul>
+							<li class="fragment">NodePort</li>
+							<li class="fragment">LoadBalancer</li>
+							<li class="fragment">ClusterIp (Headless)</li>
+							<li class="fragment">port-forward (debugging)</li>
+						</ul>
+					</section>
+					<section>
+						<p>port forward to connect our computer direct to pod</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl port-forward pod/nginx 8080:80
+							</code>
+						</pre>
+						<p>When going to localhost:8080 in your broswer you should see the nginx default page</p>
+						<p>Too cancel the port forward and reclaim the shell hit ctrl + c</p>
+					</section>
+					<section>
+						<p>Lets expose via NodePort</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl expose pod nginx --port=80 --type="NodePort"
+							</code>
+						</pre>
+					</section>
+					<section>
+						<p>To find the port that got created run the following</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl get service
+							</code>
+						</pre>
+					</section>
+					<section>
+						<p>You should get the following output</p>
+						<pre>
+							<code data-trim data-noescape>
+								NAME         TYPE        CLUSTER-IP   ...  PORT(S)     
+								kubernetes   ClusterIP   10.43.0.1    ...  443/TCP     
+								nginx        NodePort    10.43.121.75 ...  80:31053/TCP
+							</code>
+						</pre>
+						<p>The 80:31053 tells you the nodeport selected is 31053</p>
+						<p>in this case going to localhost:31053 in your browser will get you the nginx default page</p>
+					</section>
+					<section>
+						<p>Starting clean up lets delete our pod (dont worry it wont come back on its own)</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl delete pod nginx
+								# You can verify it is gone by running
+								kubectl get pods
+							</code>
+						</pre>
+					</section>
+					<section>
+						<p>To show services are seperated from pods you can see it still exists</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl get service
+							</code>
+						</pre>
+					</section>
+					<section>
+						<p>Since they are seperate objects how are they connected?</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl describe service nginx
+							</code>
+						</pre>
+						<p>describe is a valuable tool, make sure to try it out on other resource types</p>
+					</section>
+					<section>
+						<p>lets clean up our service</p>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl delete service nginx
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Local Development starter</h2>
+						<pre>
+							<code data-trim data-noescape>
+								tilt up
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>What just happened?</h2>
+						<ul>
+							<li class="fragment">tiltfile</li>
+							<li class="fragment">Kubenetes object configuration files</li>
+							<li class="fragment">Our local dev environment is location at http://127-0-0-1.sslip.io/</li>
+						</ul>
+					</section>
+					<section>
+						<h2>What does a Kubernetes config look like?</h2>
+						<pre>
+							<code data-noescape data-trim>
+								helm template ./chart
+							</code>
+						</pre>
+						<p>We will go over helm in the next section</p>
+					</section>
+				</section>
+				<section>
+					<h2>Helm Charts</h2>
+					<ul>
+						<li class="fragment">Templatized Kubernetes Config</li>
+						<li class="fragment">Can be made for reusablilty</li>
+						<li class="fragment">Packages are called charts</li>
+						<li class="fragment">Community charts can be found at <a href="https://artifacthub.io/">Artifact Hub</a></li>
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Deploying to other environments</h2>
+						<ul>
+							<li class="fragment">Namespaces</li>
+							<li class="fragment">Ingress</li>
+							<li class="fragment">Ingress controllers</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Setting up dashboard</h2>
+						<ul>
+							<li class="fragment">Dashboard can be found at http://dashboard.127-0-0-1.sslip.io</li>
+							<li class="fragment">Setup a dev and production pane (production is not deployed yet so the pane will just error out for a bit)</li>
+							<li class="fragment">Production will be found at http://prod.127-0-0-1.sslip.io/ when it is deployed</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Build Production Image</h2>
+						<pre>
+							<code data-trim data-noescape>
+								docker build \
+								-t ghcr.io/codayblue/kubernetes-workshop/app:v1.0.0 \
+								-f ./app/Dockerfile \
+								./app
+							</code>
+						</pre>
+						<p>Normally we would push this to a registry for deployment</p>
+						<p>Since our cluster is local we built it on the same runtime so thats not needed</p>
+					</section>
+					<section>
+						<h2>Creating Production Namespace</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl create namespace production
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>Deploy Production to Production Namespace</h2>
+						<pre>
+							<code data-trim data-noescape>
+								helm upgrade prod-app-helm ./chart \
+								--install \
+								--namespace production \
+								-f ./chart/prod-values.yaml
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>Our dashboard should now show production is up and running</h2>
+					</section>
+				</section>
+				<section>
+					<h2>Thank you for coming!</h2>
+					<p>This is just the start, keep learning!</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.js" integrity="sha512-uQGK5PLqAxTaCXSpiQXLYo93HzIRCBUek4jab5gDky9RN621pYpOh1oSxfmG301wW6OU4s8Bk0JDfi77JMZRuQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/highlight/highlight.min.js" integrity="sha512-PrMZUaiqYqRQyi4D71cIxqg/nyiclXEBLlR6A76tQP81iq6vrz9DBa+vLkn2efw3ECfYbKH1G+uLLpq6ZZ4dLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/notes/notes.min.js" integrity="sha512-zT7Fnv76+94Gjt8yB3Y5zxJrfhA9BLafFepaO2ywAhKnPIrj/HWEmQqybnop+Z6h1St1QlQwiddrsPial8AjJw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/markdown/markdown.min.js" integrity="sha512-ik0i3CQNgrNfRPUyZGlVqKGpxWR//UV0Y+4y6FHeHvaX/T/TM2nLyjCDQr6Nl/VZrNF8zjkiQ/YL0bsT9GsbVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: false,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
