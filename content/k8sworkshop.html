@@ -263,6 +263,11 @@
 						<h2>Local Development starter</h2>
 						<pre>
 							<code data-trim data-noescape>
+								# Make some namespaces
+								kubectl create namespace dashboard
+								kubectl create namespace dev
+
+								# Deploy local development
 								tilt up
 							</code>
 						</pre>
@@ -270,15 +275,15 @@
 					<section>
 						<h2>What just happened?</h2>
 						<ul>
+							<li>Made some namespaces</li>
 							<li>tiltfile</li>
-							<li>Kubenetes object configuration files</li>
 							<li>Our local dev environment is location at http://127-0-0-1.sslip.io/</li>
 						</ul>
 					</section>
 				</section>
 				<section>
 					<section>
-						<h2>Deploying to other environments</h2>
+						<h2>What are the resources we just deployed?</h2>
 						<ul>
 							<li>Namespaces</li>
 							<li>Ingress</li>
@@ -289,9 +294,11 @@
 						<h2>Setting up dashboard</h2>
 						<ul>
 							<li>Dashboard can be found at http://dashboard.127-0-0-1.sslip.io</li>
-							<li>Setup a dev and production pane (production is not deployed yet so the pane will just error out for a bit)</li>
-							<li>Production will be found at http://prod.127-0-0-1.sslip.io/ when it is deployed</li>
+							<li>Setup a dev pane</li>
 						</ul>
+					</section>
+					<section>
+						<h2>Lets deploy a production namespace</h2>
 					</section>
 					<section>
 						<h2>Build Production Image</h2>
@@ -326,7 +333,8 @@
 						</pre>
 					</section>
 					<section>
-						<h2>Our dashboard should now show production is up and running</h2>
+						<h2>Add Production pane to dashboard</h2>
+						<li>Production will be found at http://prod.127-0-0-1.sslip.io/</li>
 					</section>
 				</section>
 				<section>
