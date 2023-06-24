@@ -20,14 +20,25 @@
 					<h2>Kubernetes Workshop</h2>
 				</section>
 				<section>
-					<h2>Code can be found on <br /><a target="_blank" href="https://github.com/codayblue/kubernetes-workshop">my github</a></h2>
+					<h2>What we will be covering</h2>
+					<ul>
+						<li>Local Kubernetes Environment</li>
+						<li>Pods</li>
+						<li>Pod Controllers</li>
+						<li>Kubernetes Configuration</li>
+						<li>Helm</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Workshop Code</h2>
+					<a target="_blank" href="https://github.com/codayblue/kubernetes-workshop">https://github.com/codayblue/kubernetes-workshop</a>
 				</section>
 				<section>
 					<section>
 						<h2>Tools needed for this workshop</h2>
 						<ul>
-							<li class="fragment"><a href="https://rancherdesktop.io/" target="_blank">Rancher Desktop</a></li>
-							<li class="fragment"><a href="https://tilt.dev/" target="_blank">Tilt</a></li>
+							<li><a href="https://rancherdesktop.io/" target="_blank">Rancher Desktop</a></li>
+							<li><a href="https://tilt.dev/" target="_blank">Tilt</a></li>
 						</ul>
 					</section>
 					<section>
@@ -42,18 +53,18 @@
 					<section>
 						<h2>Pods</h2>
 						<ul>
-							<li class="fragment">Smallest form of a workload</li>
-							<li class="fragment">Ephemeral</li>
-							<li class="fragment">Needs a controller to come back if deleted</li>
-							<li class="fragment">Is made up of 1 or more containers</li>
-							<li class="fragment">All containers in the pod share the same network</li>
+							<li>Smallest form of a workload</li>
+							<li>Ephemeral</li>
+							<li>Needs a controller to come back if deleted</li>
+							<li>Is made up of 1 or more containers</li>
+							<li>All containers in the pod communicate over 127.0.0.1</li>
 						</ul>
 					</section>
 					<section>
 						<h2>Lets run a pod</h2>
 						<pre>
 							<code data-trim data-noescape>
-								kubectl run nginx --image=nginx --labels="app=nginx,env=demo"
+								kubectl run nginx --image=nginx
 							</code>
 						</pre>
 					</section>
@@ -75,22 +86,83 @@
 						</pre>
 						<p>Depending on internet connection and speed it might take time get a status of running</p>
 					</section>
+					<section>
+						<h2>Time to clean up and move on to controllers</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl delete pod nginx
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Pod Controllers</h2>
+						<ul>
+							<li>Deployments (Most Common)</li>
+							<li>Daemonset</li>
+							<li>StatefulSet</li>
+							<li>Job</li>
+							<li>CronJob</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Lets create a deployment</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl create deployment nginx --image=nginx --port=80
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>Lets checkout our deployment</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl get deployments
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>Lets checkout the pod it made</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl get pods
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>You can change the scale of a deployment</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl scale --replicas=3 deployment/nginx
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>You can see with the following that it scaled</h2>
+						<pre>
+							<code data-trim data-noescape>
+								kubectl get deployments
+								kubectl get pods
+							</code>
+						</pre>
+					</section>
 				</section>
 				<section>
 					<section>
 						<h2>Exposing pods</h2>
 						<ul>
-							<li class="fragment">NodePort</li>
-							<li class="fragment">LoadBalancer</li>
-							<li class="fragment">ClusterIp (Headless)</li>
-							<li class="fragment">port-forward (debugging)</li>
+							<li>NodePort</li>
+							<li>LoadBalancer</li>
+							<li>ClusterIp (Headless)</li>
+							<li>port-forward (debugging)</li>
 						</ul>
 					</section>
 					<section>
 						<p>port forward to connect our computer direct to pod</p>
 						<pre>
 							<code data-trim data-noescape>
-								kubectl port-forward pod/nginx 8080:80
+								kubectl port-forward deployment/nginx 8080:80
 							</code>
 						</pre>
 						<p>When going to localhost:8080 in your broswer you should see the nginx default page</p>
@@ -100,7 +172,7 @@
 						<p>Lets expose via NodePort</p>
 						<pre>
 							<code data-trim data-noescape>
-								kubectl expose pod nginx --port=80 --type="NodePort"
+								kubectl expose deployment nginx --port=80 --type="NodePort"
 							</code>
 						</pre>
 					</section>
@@ -128,8 +200,8 @@
 						<p>Starting clean up lets delete our pod (dont worry it wont come back on its own)</p>
 						<pre>
 							<code data-trim data-noescape>
-								kubectl delete pod nginx
-								# You can verify it is gone by running
+								kubectl delete deployment nginx
+								# You can verify the pods are gone by running
 								kubectl get pods
 							</code>
 						</pre>
@@ -162,6 +234,32 @@
 				</section>
 				<section>
 					<section>
+						<h2>Kubernetes Configuration</h2>
+						<li>YAML</li>
+						<li>Used for most container deploys</li>
+						<li>Many Templating Tools</li>
+						<li>Saves Configuration to repo</li>
+					</section>
+					<section>
+						<h2>Helm Charts</h2>
+						<ul>
+							<li>Templatized Kubernetes Config</li>
+							<li>Can be made for reusablilty</li>
+							<li>Packages are called charts</li>
+							<li>Community charts can be found at <a target="_blank" href="https://artifacthub.io/">Artifact Hub</a></li>
+						</ul>
+					</section>
+					<section>
+						<h2>What does a Kubernetes config look like?</h2>
+						<pre>
+							<code data-noescape data-trim>
+								helm template ./chart
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
 						<h2>Local Development starter</h2>
 						<pre>
 							<code data-trim data-noescape>
@@ -172,45 +270,27 @@
 					<section>
 						<h2>What just happened?</h2>
 						<ul>
-							<li class="fragment">tiltfile</li>
-							<li class="fragment">Kubenetes object configuration files</li>
-							<li class="fragment">Our local dev environment is location at http://127-0-0-1.sslip.io/</li>
+							<li>tiltfile</li>
+							<li>Kubenetes object configuration files</li>
+							<li>Our local dev environment is location at http://127-0-0-1.sslip.io/</li>
 						</ul>
 					</section>
-					<section>
-						<h2>What does a Kubernetes config look like?</h2>
-						<pre>
-							<code data-noescape data-trim>
-								helm template ./chart
-							</code>
-						</pre>
-						<p>We will go over helm in the next section</p>
-					</section>
-				</section>
-				<section>
-					<h2>Helm Charts</h2>
-					<ul>
-						<li class="fragment">Templatized Kubernetes Config</li>
-						<li class="fragment">Can be made for reusablilty</li>
-						<li class="fragment">Packages are called charts</li>
-						<li class="fragment">Community charts can be found at <a target="_blank" href="https://artifacthub.io/">Artifact Hub</a></li>
-					</ul>
 				</section>
 				<section>
 					<section>
 						<h2>Deploying to other environments</h2>
 						<ul>
-							<li class="fragment">Namespaces</li>
-							<li class="fragment">Ingress</li>
-							<li class="fragment">Ingress controllers</li>
+							<li>Namespaces</li>
+							<li>Ingress</li>
+							<li>Ingress controllers</li>
 						</ul>
 					</section>
 					<section>
 						<h2>Setting up dashboard</h2>
 						<ul>
-							<li class="fragment">Dashboard can be found at http://dashboard.127-0-0-1.sslip.io</li>
-							<li class="fragment">Setup a dev and production pane (production is not deployed yet so the pane will just error out for a bit)</li>
-							<li class="fragment">Production will be found at http://prod.127-0-0-1.sslip.io/ when it is deployed</li>
+							<li>Dashboard can be found at http://dashboard.127-0-0-1.sslip.io</li>
+							<li>Setup a dev and production pane (production is not deployed yet so the pane will just error out for a bit)</li>
+							<li>Production will be found at http://prod.127-0-0-1.sslip.io/ when it is deployed</li>
 						</ul>
 					</section>
 					<section>
