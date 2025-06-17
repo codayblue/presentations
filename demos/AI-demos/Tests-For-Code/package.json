@@ -1,0 +1,17 @@
+{
+  "name": "tests-for-code",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "vitest": "^3.2.3"
+  },
+  "volta": {
+    "node": "22.16.0"
+  }
+}
